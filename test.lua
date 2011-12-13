@@ -1,6 +1,6 @@
 #!/usr/bin/env luvit
 -- simple test program using sdb from luvit --
-local SDB = require ("./sdb.luvit")
+local SDB = require ("sdb")
 
 local db = SDB.open ("test.sdb", false)
 

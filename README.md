@@ -18,7 +18,7 @@ Example
 -------
 Sdb api has been changed a bit to fit better with
 
-	local SDB = require ("./sdb.luvit")
+	local SDB = require ("sdb")
 	local db = SDB.open ("test.sdb", false)
 	db:set ("foo", 33)   -- foo = 33
 	db:inc ("foo", 3)    -- foo += 3
