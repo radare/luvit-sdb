@@ -34,6 +34,22 @@ static int luasdb_dec(lua_State *l) {
 	return luasdb_delta (l, sdb_dec);
 }
 
+static int luasdb_expire(lua_State *l) {
+	int ret = 0;
+	Sdb *db = getdb (l);
+	if (db)
+		ret = sdb_expire (db, lua_tostring (l, 2), lua_tonumber (l, 3));
+	lua_pushboolean (l, ret);
+	return 1;
+}
+
+static int luasdb_now(lua_State *l) {
+	int ret = 0;
+	ut64 now = sdb_now ();
+	lua_pushnumber (l, now);
+	return 1;
+}
+
 static int luasdb_nexists(lua_State *l) {
 	int ret = 0;
 	Sdb *db = getdb (l);
@@ -108,14 +124,14 @@ static int luasdb_sync(lua_State *l) {
 	return 1;
 }
 
-static int luasdb_free(lua_State *l) {
+static int luasdb_close(lua_State *l) {
 	Sdb *db = getdb (l);
 	if (db) sdb_free (db);
 	else printf ("free.error\n");
 	return 0;
 }
 
-static int luasdb_new(lua_State *l) {
+static int luasdb_open(lua_State *l) {
 	int i;
 	Sdb *db;
 	size_t len;
@@ -126,11 +142,12 @@ static int luasdb_new(lua_State *l) {
 		{ "exists", luasdb_exists },
 		{ "set", luasdb_set },
 		{ "get", luasdb_get },
+		{ "expire", luasdb_expire },
 		{ "delete", luasdb_delete },
 		{ "inc", luasdb_inc },
 		{ "dec", luasdb_dec },
 		{ "sync", luasdb_sync },
-		{ "close", luasdb_free },
+		{ "close", luasdb_close },
 		{ NULL, NULL }
 	};
 
@@ -156,7 +173,8 @@ static int luasdb_new(lua_State *l) {
 
 LUALIB_API int luaopen_sdb(lua_State *l) {
 	const luaL_Reg sdblib[] = {
-		{ "open", luasdb_new },
+		{ "open", luasdb_open },
+		{ "now", luasdb_now },
 		{ NULL, NULL }
 	};
 	luaL_openlib(l, "sdb", sdblib, 0);
