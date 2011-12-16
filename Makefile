@@ -1,18 +1,11 @@
-LUVIT_DIR?=/Users/pancake/prg/luvit/luvit/deps/luajit
-
-XCFLAGS+=-I${LUVIT_DIR}/src
 XCFLAGS+=-Isdb/src
-LDFLAGS+=-shared -fPIC 
-LDFLAGS+=${LUVIT_DIR}/src/libluajit.a
-LDFLAGS+=sdb/src/libsdb.a
-LIB=modules/sdb.luvit
+LDFLAGS+=-fPIC 
 
-ifeq ($(shell uname -sm | sed -e s,x86_64,i386,),Darwin i386)
-CC=gcc -arch i386
-endif
+LIB=modules/sdb/init.luvit
 
 all: sdb/src/sdb
-	mkdir -p modules
+	mkdir -p modules/sdb
+	echo ${LDFLAGS}
 	${CC} ${XCFLAGS} ${CFLAGS} ${LDFLAGS} -o ${LIB} sdb.c
 
 sdb/src/sdb:
