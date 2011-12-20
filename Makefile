@@ -1,16 +1,15 @@
-XCFLAGS+=-Isdb/src
-LDFLAGS+=-fPIC 
-
 LIB=modules/sdb/init.luvit
+
+CFLAGS+=-I${LUVIT_DIR}/deps/luajit/src
+LDFLAGS+=-fPIC
 
 all: sdb/src/sdb
 	mkdir -p modules/sdb
-	echo ${LDFLAGS}
-	${CC} ${XCFLAGS} ${CFLAGS} ${LDFLAGS} -o ${LIB} sdb.c
+	${CC} -shared -Isdb/src ${CFLAGS} ${LDFLAGS} -o ${LIB} sdb.c sdb/src/libsdb.a
 
 sdb/src/sdb:
 	-[ ! -d sdb ] && hg clone http://hg.youterm.com/sdb
-	cd sdb/src ; ${MAKE} CC="${CC}"
+	cd sdb/src ; CFLAGS=-fPIC ${MAKE} CC="${CC}"
 
 clean:
 	-[ -d sdb ] && { cd sdb ; ${MAKE} clean ; }
