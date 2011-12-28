@@ -7,7 +7,6 @@
 typedef ut64 (*SdbDeltaFcn)(Sdb *sdb, const char *key, ut64 n);
 
 static Sdb *getdb(lua_State *l) {
-	Sdb *db;
 	lua_getfield (l, 1, "__db");
 	return lua_touserdata (l, -1);
 }
@@ -44,7 +43,6 @@ static int luasdb_expire(lua_State *l) {
 }
 
 static int luasdb_now(lua_State *l) {
-	int ret = 0;
 	ut64 now = sdb_now ();
 	lua_pushnumber (l, now);
 	return 1;

@@ -1,11 +1,12 @@
-LIB=modules/sdb/init.luvit
+LIB=modules/sdb/sdb.luvit
 
 CFLAGS+=-I${LUVIT_DIR}/deps/luajit/src
 LDFLAGS+=-fPIC
 
 all: sdb/src/sdb
 	mkdir -p modules/sdb
-	${CC} -shared -Isdb/src ${CFLAGS} ${LDFLAGS} -o ${LIB} sdb.c sdb/src/libsdb.a
+	echo "return require './sdb'" > modules/sdb/init.lua
+	${CC} -shared -Isdb/src ${CFLAGS} -o ${LIB} sdb.c sdb/src/libsdb.a ${LDFLAGS}
 
 sdb/src/sdb:
 	-[ ! -d sdb ] && hg clone http://hg.youterm.com/sdb
