@@ -2,7 +2,8 @@
 -- simple test program using sdb from luvit --
 local SDB = require ("sdb")
 
-local db = SDB.open ("test.sdb", false)
+--local db = SDB.open ("test.sdb", false)
+local db = SDB.open ()
 
 p (db)
 

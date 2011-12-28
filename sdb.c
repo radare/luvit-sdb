@@ -1,8 +1,10 @@
-/* Copyleft -- pancake <pancake@nopcode.org> */
+/* Copyleft -- 2011 -- pancake <pancake@nopcode.org> */
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
 #include <sdb.h>
+
+#define eprintf(x) fprintf (stderr, "ERROR: %s  %s\n", __FUNCTION__, x)
 
 typedef ut64 (*SdbDeltaFcn)(Sdb *sdb, const char *key, ut64 n);
 
@@ -20,7 +22,7 @@ static int luasdb_delta(lua_State *l, SdbDeltaFcn fcn) {
 		ut64 n = fcn (db, lua_tostring (l, 2), delta);
 		if (n) lua_pushnumber (l, n);
 		else lua_pushnil (l);
-	} else printf ("NULL DB\n");
+	} else eprintf ("null database");
 	lua_pushnil (l);
 	return 1;
 }
@@ -95,10 +97,10 @@ static int luasdb_set(lua_State *l) {
 			ret = sdb_delete (db, lua_tostring (l, 2));
 			break;
 		default:
-			printf ("wrong arguments for set\n");
+			eprintf ("wrong arguments for set");
 			break;
 		}
-	} else printf ("null db\n");
+	} else eprintf ("null db");
 	lua_pushboolean (l, ret);
 	return 1;
 }
@@ -108,7 +110,7 @@ static int luasdb_delete(lua_State *l) {
 	Sdb *db = getdb (l);
 	if (db && lua_gettop (l) == 3) {
 		ret = sdb_delete (db, lua_tostring (l, 2));
-	} else printf ("delete.err\n");
+	} else eprintf ("missing argument");
 	lua_pushboolean (l, ret);
 	return 1;
 }
@@ -117,7 +119,7 @@ static int luasdb_sync(lua_State *l) {
 	int ret = 0;
 	Sdb *db = getdb (l);
 	if (db) ret = sdb_sync (db);
-	else printf ("db is null\n");
+	else eprintf ("db is null");
 	lua_pushboolean (l, ret);
 	return 1;
 }
@@ -125,7 +127,7 @@ static int luasdb_sync(lua_State *l) {
 static int luasdb_close(lua_State *l) {
 	Sdb *db = getdb (l);
 	if (db) sdb_free (db);
-	else printf ("free.error\n");
+	else printf ("sdb_free error");
 	return 0;
 }
 
@@ -134,7 +136,7 @@ static int luasdb_open(lua_State *l) {
 	Sdb *db;
 	size_t len;
 	int lock = 0;
-	const char *file;
+	const char *file = NULL;
 	const luaL_Reg methods[] = {
 		{ "nexists", luasdb_nexists },
 		{ "exists", luasdb_exists },
@@ -156,7 +158,8 @@ static int luasdb_open(lua_State *l) {
 		if (lua_isnumber (l, 2))
 			lock = lua_tonumber (l, 2)? 1: 0;
 	}
-	file = luaL_checklstring(l, 1, &len);
+	if (lua_gettop (l)>0 && !lua_isnil (l, 1))
+		file = luaL_checklstring(l, 1, &len);
 	db = sdb_new (file, lock);
 	lua_newtable (l);
 	lua_pushlightuserdata (l, db);
