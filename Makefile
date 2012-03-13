@@ -27,8 +27,9 @@ dist: sdb
 	${MAKE} dist2
 
 dist2:
+	rm -rf luvit-sdb-${VERSION}
 	mv luvit-sdb luvit-sdb-${VERSION}
-	cd luvit-sdb-${VERSION} ; ${MAKE} sdb
+	cd luvit-sdb-${VERSION} ; ${MAKE} sdb ; rm -rf .git sdb/.hg
 	tar czvf luvit-sdb-${VERSION}.tar.gz luvit-sdb-${VERSION}
 
 mrproper: clean
