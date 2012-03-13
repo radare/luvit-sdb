@@ -23,7 +23,7 @@ lua-sdb.dylib:
 
 dist: sdb
 	rm -rf luvit-sdb
-	git clone `git config --get remote.origin.url`
+	git clone . luvit-sdb
 	${MAKE} dist2
 
 dist2:
