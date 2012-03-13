@@ -1,5 +1,7 @@
 local ffi = require ('ffi')
+local JSON = require ('json')
 
+-- this hardcoded path should not be static --
 ffi.sdb = ffi.load ("./modules/sdb/sdb.luvit")
 ffi.cdef ([[
         typedef struct sdb_t {
@@ -45,6 +47,18 @@ end
 function Sdb:free()
         return ffi.sdb.sdb_free (self.obj)
 end
+function Sdb:exists(k)
+	return ffi.sdb.sdb_exists (self.obj, k)
+end
+function Sdb:nexists(k)
+	return ffi.sdb.sdb_nexists(self.obj, k)
+end
+function Sdb:delete(k)
+	return ffi.sdb.sdb_delete (self.obj, k)
+end
+function Sdb:exists(k)
+	return ffi.sdb.sdb_exists(k)
+end
 function Sdb:set(k,v)
         if type(v) == "number" then
                 v = tostring (v)
@@ -56,8 +70,34 @@ end
 function Sdb:inc(k,v)
         return ffi.sdb.sdb_inc (self.obj, k, v)
 end
+function Sdb:dec(k,v)
+        return ffi.sdb.sdb_dec (self.obj, k, v)
+end
 function Sdb:get(k)
-        return ffi.string (ffi.sdb.sdb_get (self.obj, k))
+        local str = ffi.string (ffi.sdb.sdb_get (self.obj, k))
+	if str:sub (1,1) == '{' and str:sub (#str) == '}' then
+		return JSON.parse (str)
+	end
+	return str
+end
+function Sdb:getn(k)
+	-- TODO check if ut64 values work after cast
+        return tonumber (ffi.sdb.sdb_getn (self.obj, k))
+end
+function Sdb:setn(k, v)
+        return ffi.sdb.sdb_setn (self.obj, k, tonumber (v))
+end
+function Sdb:lock(file)
+	return ffi.sdb.sdb_lock (file)
+end
+function Sdb.unlock(file)
+	return ffi.sdb.sdb_unlock (file)
+end
+function Sdb:set_expire(k,e)
+	return ffi.sdb.sdb_set_expire(self.obj, k, e)
+end
+function Sdb:get_expire(k)
+	return ffi.sdb.sdb_get_expire(self.obj, k)
 end
 function Sdb:sync()
         return ffi.sdb.sdb_sync (self.obj)
@@ -65,5 +105,4 @@ end
 function Sdb:free()
         return ffi.sdb.sdb_free (self.obj)
 end
-
 return Sdb

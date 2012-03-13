@@ -11,6 +11,16 @@ db:set ("foo", 33)
 db:inc ("foo", 3)
 p ("hello", db:get ("foo"))
 
+local obj = {
+	pop=321,
+	bar=123
+}
+db:set ("foo", obj)
+p (db:get ("foo"))
+
+db:setn ("num", 1024)
+p(db:getn ("num"))
+
 -- store database
 db:sync ()
 
