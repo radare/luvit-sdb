@@ -3,7 +3,7 @@
 local SDB = require ("sdb")
 
 --local db = SDB.open ("test.sdb", false)
-local db = SDB.open ()
+local db = SDB:new ()
 
 p (db)
 
@@ -14,4 +14,4 @@ p ("hello", db:get ("foo"))
 -- store database
 db:sync ()
 
-db:close ()
+db:free ()

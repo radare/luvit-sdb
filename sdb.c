@@ -1,3 +1,4 @@
+/* This is just deprecated. only ffi code for native modules! */
 /* Copyleft -- 2011 -- pancake <pancake@nopcode.org> */
 #include <lua.h>
 #include <lualib.h>

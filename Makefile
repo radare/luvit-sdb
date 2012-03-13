@@ -4,10 +4,8 @@ CFLAGS+=-Isdb/src
 all: sdb/src/sdb
 	${MAKE} ${LIB}
 
-${LIB}: sdb.o
-	mkdir -p modules/sdb
-	echo "return require './sdb'" > modules/sdb/init.lua
-	${CC} -shared ${CFLAGS} -o ${LIB} sdb.o sdb/src/libsdb.a ${LDFLAGS}
+${LIB}:
+	${CC} -shared ${CFLAGS} -o ${LIB} sdb/src/*.o ${LDFLAGS}
 
 sdb/src/sdb:
 	-[ ! -d sdb ] && hg clone http://hg.youterm.com/sdb
@@ -18,4 +16,4 @@ clean:
 	rm -f modules/sdb/sdb.luvit test.sdb test.sdb.lock
 
 mrproper: clean
-	rm -rf sdb modules
+	rm -rf sdb
