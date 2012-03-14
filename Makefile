@@ -30,6 +30,7 @@ dist2:
 	rm -rf luvit-sdb-${VERSION}
 	mv luvit-sdb luvit-sdb-${VERSION}
 	cd luvit-sdb-${VERSION} ; ${MAKE} sdb ; rm -rf .git sdb/.hg
+	rm -f luvit-sdb-${VERSION}.zip
 	zip -r luvit-sdb-${VERSION}.zip luvit-sdb-${VERSION}
 
 mrproper: clean
