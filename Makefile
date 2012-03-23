@@ -1,12 +1,13 @@
 -include sdb/config.mk
 LIB=modules/sdb/sdb.luvit
 CFLAGS+=-Isdb/src
+OBJS=sdb/src/*.o sdb/src/json/*.o
 
 all: sdb/src/sdb
 	${MAKE} ${LIB}
 
 ${LIB}:
-	${CC} -shared ${CFLAGS} -o ${LIB} sdb/src/*.o ${LDFLAGS}
+	${CC} -shared ${CFLAGS} -o ${LIB} ${OBJS} ${LDFLAGS}
 
 sdb/src/sdb: sdb
 	cd sdb/src ; CFLAGS=-fPIC ${MAKE} CC="${CC}"

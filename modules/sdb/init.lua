@@ -1,6 +1,7 @@
 local ffi = require ('ffi')
 local JSON = require ('json')
 
+local usejson = true
 -- this hardcoded path should not be static --
 ffi.sdb = ffi.load ("./modules/sdb/sdb.luvit")
 ffi.cdef ([[
@@ -36,6 +37,13 @@ ffi.cdef ([[
         ut64 sdb_get_expire(Sdb* s, const char *key);
         ut64 sdb_now ();
         ut32 sdb_hash ();
+
+	char *sdb_json_get (Sdb *s, const char *k, const char *p);
+	int sdb_json_geti (Sdb *s, const char *k, const char *p);
+	int sdb_json_seti (Sdb *s, const char *k, const char *p, int v);
+	int sdb_json_set (Sdb *s, const char *k, const char *p, const char *v);
+	char *sdb_json_indent(const char *s);
+	char *sdb_json_unindent(const char *s);
 ]])
 
 local Sdb = {}
@@ -75,7 +83,7 @@ function Sdb:dec(k,v)
 end
 function Sdb:get(k)
         local str = ffi.string (ffi.sdb.sdb_get (self.obj, k))
-	if str:sub (1,1) == '{' and str:sub (#str) == '}' then
+	if usejson and str:sub (1,1) == '{' and str:sub (#str) == '}' then
 		return JSON.parse (str)
 	end
 	return str
@@ -104,5 +112,28 @@ function Sdb:sync()
 end
 function Sdb:free()
         return ffi.sdb.sdb_free (self.obj)
+end
+-- json
+function Sdb:json_get(k,p)
+        local str = ffi.string (ffi.sdb.sdb_json_get (self.obj, k, p))
+	if usejson and str:sub (1,1) == '{' and str:sub (#str) == '}' then
+		return JSON.parse (str)
+	end
+	return str
+end
+function Sdb:json_set(k,p,v)
+        return ffi.sdb.sdb_json_set (self.obj, k, p, v)
+end
+function Sdb:json_seti(k,p,v)
+        return ffi.sdb.sdb_json_seti (self.obj, k, p, v)
+end
+function Sdb:json_geti(k,p)
+        return ffi.sdb.sdb_json_geti (self.obj, k, p)
+end
+function Sdb:json_indent(s)
+        return ffi.string (ffi.sdb.sdb_json_indent (s))
+end
+function Sdb:json_unindent(s)
+        return ffi.string (ffi.sdb.sdb_json_unindent (s))
 end
 return Sdb
