@@ -8,9 +8,10 @@ function test_sdb()
 	local db = SDB:new ()
 	db:set ("g", item)
 	
-	for i=1,99999 do
-		local a = db:json_get ("g", "glossary.title")
+	for i=1,199999 do
+		local a = db:jsonGet ("g", "glossary.title")
 	end
+	db:free ()
 end
 
 function test_yajl()
